@@ -16,6 +16,25 @@
         ons.ready(function() {
             console.log("Onsen UI is ready!");
         });
+        
+        /*
+        * Amazon Mobile Analytics !!!
+        * Make sure region is 'us-east-1'
+        */
+        AWS.config.region = 'us-east-1';
+        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+            IdentityPoolId: 'us-east-1:f22e9eef-6a0c-43ca-a547-878cd1d438a8' //Amazon Cognito Identity Pool ID
+        });
+        
+        var options = {
+            appId : '0b29a50f4a5c47f59eb1950dd55c7040', //Amazon Mobile Analytics App ID
+            appTitle : 'アニメ情報',                    //Optional e.g. 'Example App'
+            appVersionName : '1.0.0',                   //Optional e.g. '1.4.1'
+            appVersionCode : '1',                       //Optional e.g. '42'
+            appPackageName : 'com.example.animeinfo'    //Optional e.g. 'com.amazon.example'
+        };
+        
+        var mobileAnalyticsClient = new AMA.Manager(options);
     </script>
 </head>
 <body>
