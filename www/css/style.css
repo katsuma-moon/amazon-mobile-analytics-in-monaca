@@ -1,2 +1,65 @@
 /**/
-
+.show{
+    display: block;
+}
+.hide{
+    display: none;
+}
+.center{
+    margin: 0 auto;
+}
+.middle{
+}
+.right{
+    float: right;
+}
+.navigation-bar{
+    background: #D50000;
+}
+.cours_1_header{
+    background: #E91E63;
+    color: #fff;
+}
+.list__item__center{
+    padding-right:5px;
+}
+.cours_1_item .list__item__center,
+.cours_1_item .list__item__right{
+    border-bottom:1px solid #FCE4EC;
+}
+.cours_1_item ons-icon{
+    color: #E91E63;
+}
+.cours_2_header{
+    background: #FF6D00;
+    color: #fff;
+}
+.cours_2_item .list__item__center,
+.cours_2_item .list__item__right{
+    border-bottom:1px solid #FFE0B2;
+}
+.cours_2_item ons-icon{
+    color: #FF6D00;
+}
+.cours_3_header{
+    background: #D84315;
+    color: #fff;
+}
+.cours_3_item .list__item__center,
+.cours_3_item .list__item__right{
+    border-bottom:1px solid #FFCCBC;
+}
+.cours_3_item ons-icon{
+    color: #D84315;
+}
+.cours_4_header{
+    background: #B71C1C;
+    color: #fff;
+}
+.cours_4_item .list__item__center,
+.cours_4_item .list__item__right{
+    border-bottom:1px solid #FFCDD2;
+}
+.cours_4_item ons-icon{
+    color: #B71C1C;
+}

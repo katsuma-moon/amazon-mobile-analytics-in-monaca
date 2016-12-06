@@ -1,43 +1,124 @@
 <!DOCTYPE HTML>
-<html>
+<html ng-app="my-app">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta http-equiv="Content-Security-Policy" content="default-src * data:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
     <script src="components/loader.js"></script>
+    <script src="lib/angular/angular.js"></script>
     <script src="lib/onsenui/js/onsenui.min.js"></script>
+    <script src="lib/onsenui/js/angular-onsenui.js"></script>
 
     <link rel="stylesheet" href="components/loader.css">
     <link rel="stylesheet" href="lib/onsenui/css/onsenui.css">
     <link rel="stylesheet" href="lib/onsenui/css/onsen-css-components.css">
     <link rel="stylesheet" href="css/style.css">
+    
 
     <script>
-        ons.ready(function() {
-            console.log("Onsen UI is ready!");
+        var module = angular.module('my-app', ['onsen']);
+        module.controller('AppController', function($scope) {
+            /*
+            * Amazon Mobile Analytics !!!
+            * Make sure region is 'us-east-1'
+            */
+            AWS.config.region = 'us-east-1';
+            AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                IdentityPoolId: 'us-east-1:f22e9eef-6a0c-43ca-a547-878cd1d438a8' //Amazon Cognito Identity Pool ID
+            });
+            
+            var options = {
+                appId : '0b29a50f4a5c47f59eb1950dd55c7040', //Amazon Mobile Analytics App ID
+                appTitle : 'アニメ情報',                    //Optional e.g. 'Example App'
+                appVersionName : '1.0.0',                   //Optional e.g. '1.4.1'
+                appVersionCode : '1',                       //Optional e.g. '42'
+                appPackageName : 'com.example.animeinfo'    //Optional e.g. 'com.amazon.example'
+            };
+            
+            var mobileAnalyticsClient = new AMA.Manager(options);
         });
-        
-        /*
-        * Amazon Mobile Analytics !!!
-        * Make sure region is 'us-east-1'
-        */
-        AWS.config.region = 'us-east-1';
-        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-            IdentityPoolId: 'us-east-1:f22e9eef-6a0c-43ca-a547-878cd1d438a8' //Amazon Cognito Identity Pool ID
-        });
-        
-        var options = {
-            appId : '0b29a50f4a5c47f59eb1950dd55c7040', //Amazon Mobile Analytics App ID
-            appTitle : 'アニメ情報',                    //Optional e.g. 'Example App'
-            appVersionName : '1.0.0',                   //Optional e.g. '1.4.1'
-            appVersionCode : '1',                       //Optional e.g. '42'
-            appPackageName : 'com.example.animeinfo'    //Optional e.g. 'com.amazon.example'
-        };
-        
-        var mobileAnalyticsClient = new AMA.Manager(options);
+        module.controller('TopController', ['$rootScope', '$scope', '$timeout', '$http', function($rootScope, $scope, $timeout, $http) {
+            ons.ready(function() {
+                
+                // スタイル操作scope
+                $scope.isloading = true;
+                $scope.lineH     = (window.innerHeight - 44)+'px';
+                
+                // データ読み込み中...
+                $timeout(function(){
+                    $scope.isloading = false;
+                },1000);
+
+                // 再読み込み
+                var pullHook = document.getElementById('pull-hook');
+                pullHook.addEventListener('changestate', function(event) {
+                    var message = '';
+            
+                    switch (event.state) {
+                      case 'initial':
+                        message = 'Pull to refresh';
+                        break;
+                      case 'preaction':
+                        message = 'Release';
+                        break;
+                      case 'action':
+                        message = 'Loading...';
+                        break;
+                    }
+                
+                    pullHook.innerHTML = message;
+                });
+                pullHook.onAction = function(done) {
+                    setTimeout(done, 1000);
+                };
+                
+                // API
+                var cours = [1,2,3,4];
+                var getdata  = [];
+                angular.forEach(cours, function(value, index, array) {
+                    $http({
+                        method : 'GET',
+                        url : 'http://api.moemoe.tokyo/anime/v1/master/2016/'+ value
+                    }).success(function(data, status, headers, config) {
+                        console.log("cours="+value);
+                        getdata['cours_'+value] = data;
+                    }).error(function(data, status, headers, config) {
+                        console.log(status);
+                    });
+                });
+                $rootScope.data = getdata;
+                console.log($rootScope.data);
+                
+                // inappbrowser
+                $scope.inappbrowser = function(url){
+                    cordova.InAppBrowser.open(url, '_system', 'location=no');
+                }
+
+            });
+        }]);
     </script>
 </head>
-<body>
-    This is a template for Onsen UI app.
+<body ng-controller="AppController">
+    <ons-navigator page="top.html" var="mynavigator"></ons-navigator>
+    <ons-template id="top.html">
+        <ons-page ng-controller="TopController">
+            <ons-toolbar>
+                <div class="center">アニメ情報</div>
+            </ons-toolbar>
+            <ons-pull-hook id="pull-hook">Pull to refresh</ons-pull-hook>
+            <ons-progress-circular indeterminate ng-class="{show:isloading, hide:!isloading}" ng-style="{'line-height': lineH}" class="center middle"></ons-progress-circular>
+            <ons-list ng-class="{hide:isloading, show:!isloading}" >
+                <ons-list-header class="cours_4_header">4クール(10～12月)</ons-list-header>
+                <ons-list-item class="cours_4_item" ng-repeat="d in data.cours_4" ng-click="inappbrowser(d.public_url)">{{d.title}}<span class="right"><ons-icon icon="fa-angle-right" size="20px"></ons-icon></span></ons-list-item>
+                <ons-list-header class="cours_3_header">3クール(7～9月)</ons-list-header>
+                <ons-list-item class="cours_3_item" ng-repeat="d in data.cours_3" ng-click="inappbrowser(d.public_url)">{{d.title}}<span class="right"><ons-icon icon="fa-angle-right" size="20px"></ons-icon></span></ons-list-item>
+                <ons-list-header class="cours_2_header">2クール(4～6月)</ons-list-header>
+                <ons-list-item class="cours_2_item" ng-repeat="d in data.cours_2" ng-click="inappbrowser(d.public_url)">{{d.title}}<span class="right"><ons-icon icon="fa-angle-right" size="20px"></ons-icon></span></ons-list-item>
+                <ons-list-header class="cours_1_header">1クール(1～3月)</ons-list-header>
+                <ons-list-item class="cours_1_item" ng-repeat="d in data.cours_1" ng-click="inappbrowser(d.public_url)">{{d.title}}<span class="right"><ons-icon icon="fa-angle-right" size="20px"></ons-icon></span></ons-list-item>
+            </ons-list>
+        </ons-page>
+    </ons-template>
+        
 </body>
 </html>
