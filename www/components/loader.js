@@ -1451,7 +1451,6 @@ window.monaca.cloud = window.monaca.cloud || {};
 /*** <End:monaca-core-utils LoadJs:"components/monaca-core-utils/monaca-core-utils.js"> ***/
 /*** <End:monaca-core-utils> ***/
 
-
 /*** <Start:aws-sdk-js> ***/
 /*** <Start:aws-sdk-js LoadJs:"components/aws-sdk-js/dist/aws-sdk.min.js"> ***/
 // AWS SDK for JavaScript v2.7.10

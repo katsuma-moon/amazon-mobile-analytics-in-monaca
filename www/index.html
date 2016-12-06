@@ -14,10 +14,9 @@
     <link rel="stylesheet" href="lib/onsenui/css/onsen-css-components.css">
     <link rel="stylesheet" href="css/style.css">
     
-
     <script>
-        var module = angular.module('my-app', ['onsen']);
-        module.controller('AppController', function($scope) {
+        document.addEventListener("deviceready", onDeviceReady, false);
+        function onDeviceReady() {
             /*
             * Amazon Mobile Analytics !!!
             * Make sure region is 'us-east-1'
@@ -28,15 +27,14 @@
             });
             
             var options = {
-                appId : '0b29a50f4a5c47f59eb1950dd55c7040', //Amazon Mobile Analytics App ID
-                appTitle : 'アニメ情報',                    //Optional e.g. 'Example App'
-                appVersionName : '1.0.0',                   //Optional e.g. '1.4.1'
-                appVersionCode : '1',                       //Optional e.g. '42'
-                appPackageName : 'com.example.animeinfo'    //Optional e.g. 'com.amazon.example'
+                appId : '0b29a50f4a5c47f59eb1950dd55c7040' //Amazon Mobile Analytics App ID
             };
             
             var mobileAnalyticsClient = new AMA.Manager(options);
-        });
+
+        }
+        var module = angular.module('my-app', ['onsen']);
+        module.controller('AppController', function($scope) {});
         module.controller('TopController', ['$rootScope', '$scope', '$timeout', '$http', function($rootScope, $scope, $timeout, $http) {
             ons.ready(function() {
                 
